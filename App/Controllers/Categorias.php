@@ -3,10 +3,12 @@ session_start();
 
 use App\Core\Controller;
 
-class Categorias extends Controller {
+class Categorias extends Controller
+{
 
     // lista todos os produtos
-    public function index() {
+    public function index()
+    {
         $categoriaModel = $this->model("Categoria");
 
         $dados = $categoriaModel->listarTodos();
@@ -14,12 +16,14 @@ class Categorias extends Controller {
         $this->view("categorias/index", $dados);
     }
 
-    public function create() {
+    public function create()
+    {
 
         $this->view("categorias/create");
     }
 
-    public function store() {
+    public function store()
+    {
 
         $erros =  $this->validaCampos();
 
@@ -46,38 +50,43 @@ class Categorias extends Controller {
 
         header("location: /categorias");
     }
-    
-    public function edit($id) {
+
+    public function edit($id)
+    {
 
         $categoriaModel = $this->model("Categoria");
         $categoriaModel = $categoriaModel->buscarPorId($id);
 
         if ($categoriaModel) {
             $this->view("categorias/edit", $categoriaModel);
-
         } else {
             $_SESSION["mensagem"] = "Problemas ao buscar categoria";
             header("location: /categorias");
         }
     }
 
-    public function update($id){
+    public function update($id)
+    {
 
         $descricao = $_POST["descricao"];
+        //instanciar o model
         $categoriaModel = $this->model("Categoria");
-        $id = $categoriaModel->buscarPorId($id);
-    
-        $categoriaModel = $categoriaModel->atualizar($id);
-
-        
-        $categoriaModel->id = $id;
+        //atribuir a descrição do $_POST ao model->descricao
         $categoriaModel->descricao = $descricao;
+        $categoriaModel->id = $id;
 
-        var_dump($categoriaModel);
-
+        //chamar a função de inserir
+        if ($categoriaModel->atualizar()) {
+            $_SESSION["mensagem"] = "Categoria atualizada com sucesso";
+            header("location: /categorias");
+        } else {
+            $_SESSION["mensagem"] = "Prolemas ao atulizar a categoria";
+            header("location: /categorias");
+        }
     }
 
-    public function destroy($id) {
+    public function destroy($id)
+    {
 
         $categoriaModel = $this->model("Categoria");
         $categoriaModel->id = $id;
